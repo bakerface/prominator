@@ -1,0 +1,20 @@
+{
+  "name": "prominator",
+  "version": "1.0.0",
+  "description": "Combinators for your Promises",
+  "author": "Chris Baker <mail.chris.baker@gmail.com>",
+  "license": "MIT",
+  "main": "index.js",
+  "homepage": "https://github.com/bakerface/prominator#readme",
+  "keywords": [
+    "combinator",
+    "promise"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/bakerface/prominator.git"
+  },
+  "bugs": {
+    "url": "https://github.com/bakerface/prominator/issues"
+  }
+}
