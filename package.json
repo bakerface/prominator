@@ -16,5 +16,35 @@
   },
   "bugs": {
     "url": "https://github.com/bakerface/prominator/issues"
+  },
+  "scripts": {
+    "pretest": "xo",
+    "test": "istanbul cover _mocha",
+    "codeclimate": "codeclimate-test-reporter < coverage/lcov.info"
+  },
+  "xo": {
+    "space": true,
+    "globals": [
+      "describe",
+      "beforeEach",
+      "afterEach",
+      "it"
+    ],
+    "rules": {
+      "babel/object-curly-spacing": [
+        "error",
+        "always"
+      ],
+      "brace-style": [
+        "error",
+        "stroustrup"
+      ]
+    }
+  },
+  "devDependencies": {
+    "codeclimate-test-reporter": "^0.3.3",
+    "istanbul": "^0.4.4",
+    "mocha": "^2.5.3",
+    "xo": "^0.16.0"
   }
 }
