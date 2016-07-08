@@ -9,6 +9,7 @@
 
 ### Table of Contents
 -  [catchIf](#catchifpredicate-fn)(*predicate*, *fn*) - catch an error if a condition is met
+-  [expect](#expectmodifiers-predicate)(*...modifiers*, *predicate*) - expect a condition to be met
 -  [expectCatch](#expectcatcherr)(*err*) - expect an error to be caught
 -  **Prominator**.[lift](#prominatorliftfn-instance)(*fn*, *[instance]*) - convert a node-style function to a promise
 
@@ -33,6 +34,42 @@ Prominator.resolve(new SyntaxError())
 Prominator.resolve(new SyntaxError())
   .catchIf(instanceOf(SyntaxError), console.log) // => SyntaxError
   .catch(console.log);
+```
+
+#### expect(...modifiers, predicate)
+Expects that a condition is met. The resolved value of the promise is modified
+using the *modifiers* and then passed to a *predicate*. If the predicate returns
+a truthy value, then the resolved value of the promise is returned. If the
+predicate returns a falsy value, then the promise is rejected.
+
+``` javascript
+const Prominator = require('prominator');
+
+function odd(n) {
+  return (n & 1);
+}
+
+function plus(n) {
+  return function (m) {
+    return m + n;
+  };
+}
+
+Prominator.resolve(3)
+  .expect(odd)
+  .then(console.log); // => 3
+
+Prominator.resolve(4)
+  .expect(odd)
+  .catch(console.log); // => AssertionError
+
+Prominator.resolve(6)
+  .expect(plus(1), odd)
+  .then(console.log); // => 6
+
+Prominator.resolve(7)
+  .expect(plus(1), odd)
+  .catch(console.log); // => AssertionError
 ```
 
 #### expectCatch(err)

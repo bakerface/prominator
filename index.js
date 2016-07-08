@@ -39,6 +39,16 @@ function callback(resolve, reject) {
   };
 }
 
+function compose(f, g) {
+  return function (x) {
+    return g(f(x));
+  };
+}
+
+function identity(x) {
+  return x;
+}
+
 module.exports = class Prominator extends Promise {
   static lift(fn, instance) {
     return function () {
@@ -57,6 +67,15 @@ module.exports = class Prominator extends Promise {
       }
 
       throw err;
+    });
+  }
+
+  expect() {
+    const predicate = [].slice.call(arguments).reduce(compose, identity);
+
+    return this.then(function (value) {
+      assert(predicate(value));
+      return value;
     });
   }
 
