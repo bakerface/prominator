@@ -8,23 +8,9 @@
 [![devDependencies](https://david-dm.org/bakerface/prominator/dev-status.svg)](https://david-dm.org/bakerface/prominator#info=devDependencies)
 
 ### Table of Contents
--  **Prominator**.[lift](#prominatorliftfn-instance)(*fn*, *[instance]*) - convert a node-style function to a promise
 -  [catchIf](#catchifpredicate-fn)(*predicate*, *fn*) - catch an error if a condition is met
-
-#### Prominator.lift(fn, [instance])
-Converts the node-style function *fn* to a promise. If an *instance* is
-provided, it will be bound as the *this* parameter for the function.
-
-``` javascript
-const Prominator = require('prominator');
-
-function add(n, callback) {
-  callback(null, this + n);
-}
-
-const add3 = Prominator.lift(add, 3);
-add3(4).then(console.log); // => 7
-```
+-  [expectCatch](#expectcatcherr)(*err*) - expect an error to be caught
+-  **Prominator**.[lift](#prominatorliftfn-instance)(*fn*, *[instance]*) - convert a node-style function to a promise
 
 #### catchIf(predicate, fn)
 Catches an error and invokes *fn* if *predicate* returns a truthy value. If a
@@ -40,11 +26,46 @@ function instanceOf(Type) {
   };
 }
 
-Promise.resolve(new SyntaxError())
+Prominator.resolve(new SyntaxError())
   .catchIf(instanceOf(TypeError), console.log)
   .catch(console.log); // => SyntaxError
 
-Promise.resolve(new SyntaxError())
+Prominator.resolve(new SyntaxError())
   .catchIf(instanceOf(SyntaxError), console.log) // => SyntaxError
   .catch(console.log);
+```
+
+#### expectCatch(err)
+Returns a new promise that resolves if *err* is caught. If no errors are caught
+or the error is not equal to *err*, then the promise is rejected.
+
+``` javascript
+const Prominator = require('prominator');
+
+Prominator.resolve('foo')
+  .expectCatch('error')
+  .catch(console.log); // => ExpectedPromiseRejectionError
+
+Prominator.reject('foo')
+  .expectCatch('error')
+  .catch(console.log); // => AssertionError
+
+Prominator.reject('error')
+  .expectCatch('error')
+  .then(console.log); // => undefined
+```
+
+#### Prominator.lift(fn, [instance])
+Converts the node-style function *fn* to a promise. If an *instance* is
+provided, it will be bound as the *this* parameter for the function.
+
+``` javascript
+const Prominator = require('prominator');
+
+function add(n, callback) {
+  callback(null, this + n);
+}
+
+const add3 = Prominator.lift(add, 3);
+add3(4).then(console.log); // => 7
 ```

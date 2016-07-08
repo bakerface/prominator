@@ -21,54 +21,42 @@
  *
  */
 
-const assert = require('assert');
+const Prominator = require('..');
 
-class ExpectedPromiseRejectionError extends Error {
-  constructor(value) {
-    super();
-
-    this.name = 'ExpectedPromiseRejectionError';
-    this.message = `Expected the promise to reject, but it resolved with ${value}`;
-    this.value = value;
-  }
-}
-
-function callback(resolve, reject) {
-  return function (error, value) {
-    return error ? reject(error) : resolve(value);
-  };
-}
-
-module.exports = class Prominator extends Promise {
-  static lift(fn, instance) {
-    return function () {
-      const args = [].slice.call(arguments);
-
-      return new Prominator(function (resolve, reject) {
-        return fn.apply(instance, args.concat(callback(resolve, reject)));
-      });
-    };
-  }
-
-  catchIf(predicate, fn) {
-    return this.catch(function (err) {
-      if (predicate(err)) {
-        return fn(err);
-      }
-
-      throw err;
+describe('expectCatch(err)', function () {
+  describe('when the expected error is caught', function () {
+    it('should resolve', function (done) {
+      Prominator.reject('expected')
+        .expectCatch('expected')
+        .then(function () {
+          done();
+        });
     });
-  }
+  });
 
-  expectCatch(expected) {
-    function resolved(value) {
-      throw new ExpectedPromiseRejectionError(value);
-    }
+  describe('when an unexpected error is caught', function () {
+    it('should reject', function (done) {
+      Prominator.reject('unexpected')
+        .expectCatch('expected')
+        .then(function () {
+          done('Expected rejection');
+        })
+        .catch(function () {
+          done();
+        });
+    });
+  });
 
-    function rejected(actual) {
-      assert.deepStrictEqual(actual, expected);
-    }
-
-    return this.then(resolved, rejected);
-  }
-};
+  describe('when the promise resolves', function () {
+    it('should reject', function (done) {
+      Prominator.resolve('unexpected')
+        .expectCatch('expected')
+        .then(function () {
+          done('Expected rejection');
+        })
+        .catch(function () {
+          done();
+        });
+    });
+  });
+});
