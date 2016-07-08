@@ -21,30 +21,36 @@
  *
  */
 
-function callback(resolve, reject) {
-  return function (error, value) {
-    return error ? reject(error) : resolve(value);
-  };
-}
+const assert = require('assert');
+const Prominator = require('..');
 
-module.exports = class Prominator extends Promise {
-  static lift(fn, instance) {
-    return function () {
-      const args = [].slice.call(arguments);
-
-      return new Prominator(function (resolve, reject) {
-        return fn.apply(instance, args.concat(callback(resolve, reject)));
-      });
-    };
-  }
-
-  catchIf(predicate, fn) {
-    return this.catch(function (err) {
-      if (predicate(err)) {
-        return fn(err);
-      }
-
-      throw err;
+describe('catchIf(predicate, fn)', function () {
+  describe('when the predicate returns true', function () {
+    beforeEach(function () {
+      this.predicate = () => true;
     });
-  }
-};
+
+    it('should catch the error', function (done) {
+      Prominator.reject('error')
+        .catchIf(this.predicate, function (err) {
+          assert.equal(err, 'error');
+          done();
+        });
+    });
+  });
+
+  describe('when the predicate returns false', function () {
+    beforeEach(function () {
+      this.predicate = () => false;
+    });
+
+    it('should not catch the error', function (done) {
+      Prominator.reject('error')
+        .catchIf(this.predicate, done)
+        .catch(function (err) {
+          assert.equal(err, 'error');
+          done();
+        });
+    });
+  });
+});

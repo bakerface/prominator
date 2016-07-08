@@ -9,6 +9,7 @@
 
 ### Table of Contents
 -  **Prominator**.[lift](#prominatorliftfn-instance)(*fn*, *[instance]*) - convert a node-style function to a promise
+-  [catchIf](#catchifpredicate-fn)(*predicate*, *fn*) - catch an error if a condition is met
 
 #### Prominator.lift(fn, [instance])
 Converts the node-style function *fn* to a promise. If an *instance* is
@@ -23,4 +24,27 @@ function add(n, callback) {
 
 const add3 = Prominator.lift(add, 3);
 add3(4).then(console.log); // => 7
+```
+
+#### catchIf(predicate, fn)
+Catches an error and invokes *fn* if *predicate* returns a truthy value. If a
+falsy value is returned, the error will be re-thrown and the *fn* is not
+invoked.
+
+``` javascript
+const Prominator = require('prominator');
+
+function instanceOf(Type) {
+  return function (o) {
+    return o instanceof Type;
+  };
+}
+
+Promise.resolve(new SyntaxError())
+  .catchIf(instanceOf(TypeError), console.log)
+  .catch(console.log); // => SyntaxError
+
+Promise.resolve(new SyntaxError())
+  .catchIf(instanceOf(SyntaxError), console.log) // => SyntaxError
+  .catch(console.log);
 ```

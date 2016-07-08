@@ -1,6 +1,6 @@
 {
   "name": "prominator",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Combinators for your Promises",
   "author": "Chris Baker <mail.chris.baker@gmail.com>",
   "license": "MIT",
