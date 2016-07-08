@@ -90,4 +90,10 @@ module.exports = class Prominator extends Promise {
 
     return this.then(resolved, rejected);
   }
+
+  rethrow(err) {
+    return this.catch(function () {
+      throw err;
+    });
+  }
 };

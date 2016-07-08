@@ -12,6 +12,7 @@
 -  [expect](#expectmodifiers-predicate)(*...modifiers*, *predicate*) - expect a condition to be met
 -  [expectCatch](#expectcatcherr)(*err*) - expect an error to be caught
 -  **Prominator**.[lift](#prominatorliftfn-instance)(*fn*, *[instance]*) - convert a node-style function to a promise
+-  [rethrow](#rethrowerr)(*err*) - re-throw an error
 
 #### catchIf(predicate, fn)
 Catches an error and invokes *fn* if *predicate* returns a truthy value. If a
@@ -105,4 +106,19 @@ function add(n, callback) {
 
 const add3 = Prominator.lift(add, 3);
 add3(4).then(console.log); // => 7
+```
+
+#### rethrow(err)
+Catches an error and throws *err* in its place.
+
+``` javascript
+const Prominator = require('prominator');
+
+Prominator.reject('foo')
+  .rethrow('bar')
+  .catch(console.log); // => bar
+
+Prominator.resolve('foo')
+  .rethrow('bar')
+  .then(console.log); // => foo
 ```
